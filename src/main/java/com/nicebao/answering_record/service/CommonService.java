@@ -95,13 +95,13 @@ public class CommonService {
 					String studentId = participantMatcher.group(3);
 					String name = participantMatcher.group(2);
 					String responseTime = participantMatcher.group(4);
-					answerRecordList.add(new AnswerRecord(name, studentId, responseTime));
+					answerRecordList.add(new AnswerRecord(studentId, name, responseTime));
 					// 更新位置
 					participantIndex = participantMatcher.end();
 
 				}
 			}
-			responseRecords.add(new ResponseRecord(answerRecordList, participantsCount, timestamp));
+			responseRecords.add(new ResponseRecord(timestamp, participantsCount,answerRecordList));
 		}
 		return responseRecords;
 	}

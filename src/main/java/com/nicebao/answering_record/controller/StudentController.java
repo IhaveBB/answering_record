@@ -1,8 +1,6 @@
 package com.nicebao.answering_record.controller;
 
 import com.nicebao.answering_record.common.ResponseResult;
-import com.nicebao.answering_record.dto.RequestData;
-import com.nicebao.answering_record.enums.ResultCodeEnum;
 import com.nicebao.answering_record.model.ResponseRecord;
 import com.nicebao.answering_record.service.StudentService;
 import lombok.extern.slf4j.Slf4j;

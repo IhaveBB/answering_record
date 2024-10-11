@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>抢答记录统计</title>
-    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
-    <script src="https://unpkg.com/vue@2.6.14/dist/vue.min.js"></script>
-    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="lib/vue.min.js"></script>
+    <script src="lib/element-ui.js"></script>
+    <script src="lib/axios.min.js"></script>
+    <link rel="stylesheet" href="lib/element-ui.css">
+    <link rel="stylesheet" href="lib/fonts/element-icons.ttf">
+    <link rel="stylesheet" href="lib/fonts/element-icons.woff">
+
     <style>
         body {
             font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -103,19 +106,25 @@
         <div v-if="showFormat" class="format-example">
             <h3>参考格式</h3>
             <pre>
+若实际抢答人数＞抢答记录规定的人数，则按时间进行匹配，时间相同按姓名匹配。
+
 抢答记录
 2024年10月08日 17：46 3人
 1
 张三
 2022122100000
-2024-10-08 17:47:02
+2024-10-08 17:47:05
 2
 李四
 2022122100001
-2024-10-08 17:47:04
+2024-10-08 17:47:02
 3
 王五
 2022122100002
+2024-10-08 17:47:04
+4
+赵六
+2022122100003
 2024-10-08 17:47:04
             </pre>
         </div>
@@ -142,10 +151,10 @@
             handleStrategyChange() {
                 // 根据选择的策略类型更新提示信息和格式示例
                 if (this.form.strategyType === 'strict') {
-                    this.alertMessage = '方法一可输出格式化数据和 CSV 文件，但需要严格按照格式输入。';
+                    this.alertMessage = '方法一：根据严格的规范格式进行匹配。输出格式化数据和 CSV 文件';
                     this.showFormat = true; // 显示格式示例
                 } else {
-                    this.alertMessage = '方法二只能输出 CSV 文件，包含抢答学生名。';
+                    this.alertMessage = '方法二：根据学生姓名出现次数进行匹配。只可输出 CSV 文件。';
                     this.showFormat = false; // 隐藏格式示例
                     this.jsonData = null; // 切换到方法二时清空 JSON 数据
                 }

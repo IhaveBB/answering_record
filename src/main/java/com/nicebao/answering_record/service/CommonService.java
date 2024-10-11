@@ -4,10 +4,7 @@ import com.nicebao.answering_record.model.AnswerRecord;
 import com.nicebao.answering_record.model.ResponseRecord;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -79,28 +76,53 @@ public class CommonService {
 		List<ResponseRecord> responseRecords = new ArrayList<>();
 		Pattern pattern = Pattern.compile("(\\d{4}年\\d{2}月\\d{2}日 \\d{2}：\\d{2}) (\\d+)人");
 		Matcher matcher = pattern.matcher(data);
+
+		int searchIndex = 0;
+
 		//matcher匹配的是抢答的开始时间戳和人数
-		while(matcher.find()){
+		while(matcher.find(searchIndex)){
 			String timestamp = matcher.group(1);
 			int participantsCount = Integer.parseInt(matcher.group(2));
 			List<AnswerRecord> answerRecordList = new ArrayList<>();
 
+			// 记录当前时间段的结束位置
+			int startIndex = matcher.end();
+			// 查找下一个时间段的开始位置，避免影响外层循环
+			int endIndex;
+			if (matcher.find(startIndex)) {
+				// 下一个时间段的开始位置
+				endIndex = matcher.start();
+			} else {
+				// 没有下一个时间段，取数据末尾
+				endIndex = data.length();
+			}
+
+			// 截取当前时间段内的数据
+			String recordSection = data.substring(startIndex, endIndex);
+
 			Pattern participantPattern = Pattern.compile("(\\d+)\\s*([\\u4e00-\\u9fa5]+)\\s*(\\d+)\\s*([\\d\\- :]+)");
-			Matcher participantMatcher = participantPattern.matcher(data);
+			Matcher participantMatcher = participantPattern.matcher(recordSection);
 
 			// 从抢答标志的结束位置开始查找
-			int participantIndex = matcher.end();
-			for(int i = 0; i < participantsCount; i++){
-				if(participantMatcher.find(participantIndex)){
-					String studentId = participantMatcher.group(3);
-					String name = participantMatcher.group(2);
-					String responseTime = participantMatcher.group(4);
-					answerRecordList.add(new AnswerRecord(studentId, name, responseTime));
-					// 更新位置
-					participantIndex = participantMatcher.end();
+			int participantIndex = 0;
+			while (participantMatcher.find(participantIndex)) {
+				String studentId = participantMatcher.group(3);
+				String name = participantMatcher.group(2);
+				String responseTime = participantMatcher.group(4);
+				answerRecordList.add(new AnswerRecord(studentId, name, responseTime));
+				// 更新位置
+				participantIndex = participantMatcher.end();
+			};
+			// 更新 searchIndex 为当前时间段的结束位置，继续下一个匹配
+			searchIndex = endIndex;
 
-				}
+			// 如果抢答人数＞上方人数，则只保留规定人数的数据
+			if (answerRecordList.size() > participantsCount) {
+				// 根据抢答时间进行排序
+				answerRecordList.sort(Comparator.comparing(AnswerRecord::getAnswerTime));
+				answerRecordList = answerRecordList.subList(0, participantsCount);
 			}
+
 			responseRecords.add(new ResponseRecord(timestamp, participantsCount,answerRecordList));
 		}
 		return responseRecords;

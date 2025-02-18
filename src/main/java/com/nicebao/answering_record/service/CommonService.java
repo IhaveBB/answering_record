@@ -78,8 +78,6 @@ public class CommonService {
 		Matcher matcher = pattern.matcher(data);
 
 		int searchIndex = 0;
-
-		//matcher匹配的是抢答的开始时间戳和人数
 		while(matcher.find(searchIndex)){
 			String timestamp = matcher.group(1);
 			int participantsCount = Integer.parseInt(matcher.group(2));
@@ -87,7 +85,7 @@ public class CommonService {
 
 			// 记录当前时间段的结束位置
 			int startIndex = matcher.end();
-			// 查找下一个时间段的开始位置，避免影响外层循环
+			// 查找下一个时间段的开始位置
 			int endIndex;
 			if (matcher.find(startIndex)) {
 				// 下一个时间段的开始位置
@@ -110,7 +108,6 @@ public class CommonService {
 				String name = participantMatcher.group(2);
 				String responseTime = participantMatcher.group(4);
 				answerRecordList.add(new AnswerRecord(studentId, name, responseTime));
-				// 更新位置
 				participantIndex = participantMatcher.end();
 			};
 			// 更新 searchIndex 为当前时间段的结束位置，继续下一个匹配
